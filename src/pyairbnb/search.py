@@ -1,6 +1,7 @@
 from datetime import datetime
 from urllib.parse import urlencode
 import pyairbnb.utils as utils
+from typing import List
 from curl_cffi import requests
 
 ep_autocomplete = "https://www.airbnb.com/api/v2/autocompletes-personalized"
@@ -32,7 +33,7 @@ headers_global = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-def get(check_in:str, check_out:str, ne_lat:float, ne_long:float, sw_lat:float, sw_long:float, zoom_value:int, currency:str, place_type: str, price_min: int, price_max: int, cursor:str, api_key:str, proxy_url:str):
+def get(adults:int, check_in:str, check_out:str, ne_lat:float, ne_long:float, sw_lat:float, sw_long:float, zoom_value:int, currency:str, place_type: str, price_min: int, price_max: int, amenities:List[str], cursor:str, api_key:str, proxy_url:str):
     check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
     check_out_date = datetime.strptime(check_out, "%Y-%m-%d")
 
@@ -50,6 +51,7 @@ def get(check_in:str, check_out:str, ne_lat:float, ne_long:float, sw_lat:float, 
     rawParams=[
         {"filterName":"cdnCacheSafe","filterValues":["false"]},
         {"filterName":"channel","filterValues":["EXPLORE"]},
+        {"filterName":"adults","filterValues":[adults]},
         {"filterName":"checkin","filterValues":[check_in]},
         {"filterName":"checkout","filterValues":[check_out]},
         {"filterName":"datePickerType","filterValues":["calendar"]},
@@ -72,6 +74,12 @@ def get(check_in:str, check_out:str, ne_lat:float, ne_long:float, sw_lat:float, 
         {"filterName":"version","filterValues":["1.8.3"]},
         {"filterName":"zoomLevel","filterValues":[str(zoom_value)]},
     ]
+
+    # Searches only houses, guest houses and apartments
+    rawParams.append({"filterName":"propertyType","filterValues":["1"]})
+    rawParams.append({"filterName":"propertyType","filterValues":["2"]})
+    rawParams.append({"filterName":"propertyType","filterValues":["3"]})
+
     if place_type is not None and place_type in ("Private room","Entire home/apt"):
         rawParams.append({"filterName":"room_types","filterValues": [place_type]})
         rawParams.append({"filterName":"selected_filter_order","filterValues": ["room_types:"+place_type]})
@@ -81,6 +89,14 @@ def get(check_in:str, check_out:str, ne_lat:float, ne_long:float, sw_lat:float, 
 
     if price_max is not None and price_max > 0:
         rawParams.append({"filterName":"price_max","filterValues": [str(price_max)]})
+
+    # Iterates through each amenity and add it to rawParams
+    if len(amenities) > 0:
+        for amenity in amenities:
+            rawParams.append({
+                "filterName": "amenities",
+                "filterValues": [amenity]
+            })
 
     inputData = {
         "operationName":"StaysSearch",
@@ -121,7 +137,7 @@ def get(check_in:str, check_out:str, ne_lat:float, ne_long:float, sw_lat:float, 
         proxies = {"http": proxy_url, "https": proxy_url}
     response = requests.post(url_parsed, json = inputData, headers=headers_copy, proxies=proxies,  impersonate="chrome124")
     if response.status_code != 200:
-        raise Exception("Not corret status code: ", response.status_code, " response body: ",response.text)
+        raise Exception("Incorrect status code: ", response.status_code, " response body: ", response.text)
     data = response.json()
     to_return=utils.get_nested_value(data,"data.presentation.staysSearch.results",{})
     return to_return
