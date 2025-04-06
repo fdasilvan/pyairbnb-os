@@ -11,6 +11,7 @@ import pyairbnb.calendarinfo as calendar
 import pyairbnb.host_details as host_details
 from datetime import datetime
 from urllib.parse import urlparse
+from typing import List
 
 def get_calendar(room_id: str ,api_key: str = "", proxy_url: str = ""):
     """
@@ -103,12 +104,13 @@ def get_details(room_url: str = None, room_id: int = None, domain: str = "www.ai
     
     return data
 
-def search_all(check_in: str, check_out: str, ne_lat: float, ne_long: float, sw_lat: float, sw_long: float,
-               zoom_value: int, currency: str, place_type: str, price_min: int, price_max: int, proxy_url: str):
+def search_all(adults: int, check_in: str, check_out: str, ne_lat: float, ne_long: float, sw_lat: float, sw_long: float,
+               zoom_value: int, currency: str, place_type: str, price_min: int, price_max: int, amenities:List[str], proxy_url: str):
     """
     Performs a paginated search for all rooms within specified geographic bounds.
 
     Args:
+        adults (int): Number of adults.
         check_in (str): Check-in date.
         check_out (str): Check-out date.
         ne_lat (float): Latitude of northeast corner.
@@ -127,8 +129,8 @@ def search_all(check_in: str, check_out: str, ne_lat: float, ne_long: float, sw_
     cursor = ""
     while True:
         results_raw = search.get(
-            check_in, check_out, ne_lat, ne_long, sw_lat, sw_long, zoom_value, 
-            currency, place_type, price_min, price_max, cursor, api_key, proxy_url
+            adults, check_in, check_out, ne_lat, ne_long, sw_lat, sw_long, zoom_value, 
+            currency, place_type, price_min, price_max, amenities, cursor, api_key, proxy_url
         )
         results = standardize.from_search(results_raw.get("searchResults", []))
         all_results.extend(results)
