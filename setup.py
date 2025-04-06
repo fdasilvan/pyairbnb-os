@@ -4,7 +4,7 @@ VERSION = '0.0.13'
 DESCRIPTION = 'Airbnb scraper in Python'
 
 setup(
-    name="pyairbnb-os (forked from pyairbnb)",
+    name="pyairbnb-os",
     version=VERSION,
     author="Adalberto (original author: John Balvin)",
     author_email="<heyadalberto@gmail.com>",
