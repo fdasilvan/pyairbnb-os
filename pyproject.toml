@@ -1,10 +1,10 @@
 [project]
 
 version = '0.0.13'
-name="pyairbnb"
-description = 'Airbnb scraper in Python'
+name="pyairbnb-os"
+description = 'PyAirbnb on steroids!'
 authors = [
-  { name="John Balvin", email="johnchristian@hotmail.es" },
+  { name="Adalberto (original author: John Balvin)", email="heyadalberto@gmail.com" },
 ]
 readme= "README.md"
 keywords=['airbnb', 'scraper', 'crawler','bot','reviews']
@@ -12,4 +12,5 @@ dependencies=['curl_cffi','bs4','requests']
 
 
 [project.urls]
-Homepage='https://github.com/johnbalvin/pyairbnb'
+Homepage='https://github.com/adalberto/pyairbnb-os'
+Original='https://github.com/johnbalvin/pyairbnb'

@@ -1,6 +1,10 @@
 # Airbnb scraper in Python
 
 ## Overview
+
+Thanks, John for this amazing lib! <3
+Original project: https://github.com/johnbalvin/pyairbnb
+
 This project is an open-source tool developed in Python for extracting product information from Airbnb. It's designed to be easy to use, making it an ideal solution for developers looking for Airbnb product data.
 
 ## Features
